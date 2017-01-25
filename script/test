@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -e
+
+${BASH_SOURCE%/*}/../test/nginx_conf_test
