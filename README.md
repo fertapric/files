@@ -74,6 +74,14 @@ Before running the script, be sure to provide the proper environment variables. 
 FILES_HOST=files.company.com script/test
 ```
 
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at https://github.com/fertapric/files. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+
 ## License
 
 **Files** is released under the [MIT License](http://www.opensource.org/licenses/MIT).
+
+## Author
+
+Fernando Tapia Rico, [@fertapric](https://twitter.com/fertapric)
