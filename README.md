@@ -2,7 +2,7 @@
 
 A service to upload files to AWS S3, in less than 180 LOC of nginx configuration!
 
-The service also resizes dynamically images in JPEG, GIF and PNG formats.
+The service also dynamically resizes images in JPEG, GIF and PNG formats.
 
 ## Getting Started
 
@@ -24,15 +24,17 @@ If you are familiar with Docker, build the Docker image (`docker build -t <usern
 
 ## Usage
 
-To upload a file to S3, you must send a POST request with the content of the file and the `Content-Type` header at `/`:
+### Uploading files
 
-```
-curl --verbose --header "Content-Type: <mime type>" --data-binary @"<path to file" $FILES_HOST
+To upload a file to S3, you must send a `POST` request with the content of the file and the `Content-Type` header to `/`:
+
+```bash
+$ curl --verbose --header "Content-Type: <mime type>" --data-binary @"<path to file" $FILES_HOST
 ```
 
 Here is an example:
 
-```
+```bash
 $ curl --verbose --header "Content-Type: text/plain" --data-binary @"/home/fertapric/document.txt" files.company.com
 > POST / HTTP/1.1
 > Host: files.company.com
@@ -52,25 +54,40 @@ $ curl --verbose --header "Content-Type: text/plain" --data-binary @"/home/ferta
 <
 ```
 
-Internally, nginx will include an [AWS Signature Version 4](http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html) authorization header, proxy your request to AWS S3 and include the header `X-File-URL` with the URL of your uploaded file.
+Internally, nginx will include an [AWS Signature Version 4](http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html) authorization header, proxy your request to AWS S3, and include the header `X-File-URL` with the URL of your uploaded file in its response.
 
-The [S3 key](http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html) is generated using a combination of the content type and an unique identifier (i.e. `image/png/6CEB99DE-E345-11E6-BBA6-C680ACE78BD7`).
+The [S3 key](http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html) is generated using a combination of the content type and a unique identifier (i.e. `image/png/6CEB99DE-E345-11E6-BBA6-C680ACE78BD7`).
 
 **Files** currently supports `image/jpeg`, `image/png`, `image/gif` and `text/plain` formats.
 
-Images can be dynamically resized by appending `w` (width) and `h` (height) query string parameters: `http://files.company.com/image/png/6CEB99DE-E345-11E6-BBA6-C680ACE78BD7?w=100`. **Files** does not stretch the image (`w` or `h` bigger than the original image) nor change its proportions (it will satisfy the minimum conditions if both `w` or `h` are provided).
+### Retrieving files
 
-The service uses the [ngx_http_image_filter_module](http://nginx.org/en/docs/http/ngx_http_image_filter_module.html) to provide image resizing. If you need a more advanced image manipulation, you can configure and load the [ngx_small_light](https://github.com/cubicdaiya/ngx_small_light) module.
+To download one of the uploaded files, you can simply `GET` it by using the `X-File-URL` you got as a response header when uploading it.
+
+```bash
+$ curl http://files.company.com/text/plain/6CEB99DE-E345-11E6-BBA6-C680ACE78BD7
+
+```
+
+Images can be resized dynamically by appending `w` (width) and `h` (height) as query string parameters.
+
+```bash
+$ curl http://files.company.com/image/png/6CEB99DE-E345-11E6-BBA6-C680ACE78BD7?w=100&h=100
+```
+
+**Files** does not stretch the image (`w` or `h` bigger than the original image), nor changes its proportions (it will satisfy the minimum conditions if both `w` or `h` are provided).
+
+The service uses the [ngx_http_image_filter_module](http://nginx.org/en/docs/http/ngx_http_image_filter_module.html) to provide image resizing. If you need more advanced image manipulation, consider using the [ngx_small_light](https://github.com/cubicdaiya/ngx_small_light) module.
 
 ## Testing
 
 **Files** can be tested executing `script/test`.
 
-Before running the script, be sure to provide the proper environment variables. **The test uploads several (small) files to S3, so it's recommended to use a dedicated S3 bucket for testing. The S3 bucket is not emptied after running the test suite for safety reasons.**
+Before running the script, be sure to provide the proper environment variables. **The test uploads several (small) files to S3, so it's recommended to use a dedicated S3 bucket for testing. The S3 bucket is not emptied after running the test suite, for safety reasons.**
 
 `script/test` can be used also for testing staging or production environments:
 
-```
+```bash
 FILES_HOST=files.company.com script/test
 ```
 
