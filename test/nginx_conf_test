@@ -1,7 +1,13 @@
 #!/bin/bash
 
+GREEN="\33[32m"
+RED="\33[31m"
+RESET="\33[0m"
+
 function setup {
-  [ -z "$FILES_HOST"] && FILES_HOST=localhost
+  if [[ -z "$FILES_HOST" ]]; then
+    FILES_HOST=localhost
+  fi
 }
 
 function test_healthcheck_endpoint {
@@ -151,7 +157,7 @@ function request {
 }
 
 function get_file_url {
-  echo "$1" | grep "X-File-URL" | cut -d " " -f 3 | tr -d '\r'
+  echo "$1" | grep "X-File-URL" | cut -d " " -f 3 | tr -d "\r"
 }
 
 function assert_file_uploaded_equal {
@@ -176,17 +182,15 @@ function run_tests {
 
   setup > /dev/null 2>&1
 
-  for test in $tests
-  do
+  for test in $tests; do
     test_count=$((test_count+1))
     test_output=$(eval $test)
 
-    if [ $? -eq 0 ]
-    then
-      printf "\33[0;32m.\33[0m"
+    if [[ $? -eq 0 ]]; then
+      printf "${GREEN}.${RESET}"
     else
       failures_count=$((failures_count+1))
-      printf "\n\33[0;31mE\n\nTest $test failed\n\nOutput:\n\n$test_output\33[0m\n"
+      printf "\n${RED}E\n\nTest $test failed\n\nOutput:\n\n${test_output}${RESET}\n"
     fi
   done
 
