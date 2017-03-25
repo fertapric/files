@@ -83,7 +83,7 @@ The service uses the [ngx_http_image_filter_module](http://nginx.org/en/docs/htt
 
 **Files** can be tested executing `script/test`.
 
-Before running the script, be sure to provide the proper environment variables. **The test uploads several (small) files to S3, so it's recommended to use a dedicated S3 bucket for testing. The S3 bucket is not emptied after running the test suite, for safety reasons.**
+Before running the script, be sure to launch the service and provide the proper environment variables. **The test uploads several (small) files to S3, so it's recommended to use a dedicated S3 bucket for testing. The S3 bucket is not emptied after running the test suite, for safety reasons.**
 
 `script/test` can be used also for testing staging or production environments:
 
