@@ -1,5 +1,5 @@
-#!/bin/bash
+#!/bin/sh
 
 set -e
 
-${BASH_SOURCE%/*}/../test/nginx_conf_test
+$(dirname -- "$0")/../test/nginx_conf_test

@@ -1,16 +1,16 @@
-#!/bin/bash
+#!/bin/sh
 
 GREEN="\33[32m"
 RED="\33[31m"
 RESET="\33[0m"
 
-function setup {
-  if [[ -z "$FILES_HOST" ]]; then
-    FILES_HOST=localhost
-  fi
-}
+FIXTURES_PATH=$(dirname -- "$0")/fixtures
 
-function test_healthcheck_endpoint {
+if [ -z "$FILES_HOST" ]; then
+  FILES_HOST=localhost
+fi
+
+test_healthcheck_endpoint() {
   response=$(curl --verbose $FILES_HOST/check 2>&1)
 
   assert_contains "$response" "< HTTP/1.1 200 OK" && \
@@ -18,149 +18,149 @@ function test_healthcheck_endpoint {
   assert_contains "$response" '{ "service": "files", "status": "healthy" }'
 }
 
-function test_upload_endpoint_rejects_get_requests {
+test_upload_endpoint_rejects_get_requests() {
   response=$(request GET)
 
   assert_contains "$response" "< HTTP/1.1 404 Not Found"
 }
 
-function test_upload_endpoint_rejects_put_requests {
+test_upload_endpoint_rejects_put_requests() {
   response=$(request PUT)
 
   assert_contains "$response" "< HTTP/1.1 404 Not Found"
 }
 
-function test_upload_endpoint_rejects_delete_requests {
+test_upload_endpoint_rejects_delete_requests() {
   response=$(request DELETE)
 
   assert_contains "$response" "< HTTP/1.1 404 Not Found"
 }
 
-function test_upload_endpoint_rejects_requests_without_content_type {
+test_upload_endpoint_rejects_requests_without_content_type() {
   response=$(request POST "")
 
   assert_contains "$response" "< HTTP/1.1 415 Unsupported Media Type"
 }
 
-function test_upload_endpoint_rejects_requests_with_unsupported_content_type {
+test_upload_endpoint_rejects_requests_with_unsupported_content_type() {
   response=$(request POST application/json)
 
   assert_contains "$response" "< HTTP/1.1 415 Unsupported Media Type"
 }
 
-function test_uploads_image_png_files {
-  filepath=${BASH_SOURCE%/*}/fixtures/test_4x4.png
+test_uploads_image_png_files() {
+  filepath=$FIXTURES_PATH/test_4x4.png
 
   response=$(request POST image/png --data-binary @"$filepath")
 
   assert_file_uploaded_equal $(get_file_url "$response") $filepath
 }
 
-function test_resizes_image_png_files {
-  resized_filepath=${BASH_SOURCE%/*}/fixtures/test_2x2.png
-  filepath=${BASH_SOURCE%/*}/fixtures/test_4x4.png
+test_resizes_image_png_files() {
+  resized_filepath=$FIXTURES_PATH/test_2x2.png
+  filepath=$FIXTURES_PATH/test_4x4.png
 
   response=$(request POST image/png --data-binary @"$filepath")
 
   assert_file_uploaded_equal "$(get_file_url "$response")?w=2" $resized_filepath
 }
 
-function test_uploads_image_jpeg_files {
-  filepath=${BASH_SOURCE%/*}/fixtures/test_4x4.jpeg
+test_uploads_image_jpeg_files() {
+  filepath=$FIXTURES_PATH/test_4x4.jpeg
 
   response=$(request POST image/jpeg --data-binary @"$filepath")
 
   assert_file_uploaded_equal $(get_file_url "$response") $filepath
 }
 
-function test_resizes_image_jpeg_files {
-  resized_filepath=${BASH_SOURCE%/*}/fixtures/test_2x2.jpeg
-  filepath=${BASH_SOURCE%/*}/fixtures/test_4x4.jpeg
+test_resizes_image_jpeg_files() {
+  resized_filepath=$FIXTURES_PATH/test_2x2.jpeg
+  filepath=$FIXTURES_PATH/test_4x4.jpeg
 
   response=$(request POST image/jpeg --data-binary @"$filepath")
 
   assert_file_uploaded_equal "$(get_file_url "$response")?w=2" $resized_filepath
 }
 
-function test_uploads_image_gif_files {
-  filepath=${BASH_SOURCE%/*}/fixtures/test_4x4.gif
+test_uploads_image_gif_files() {
+  filepath=$FIXTURES_PATH/test_4x4.gif
 
   response=$(request POST image/gif --data-binary @"$filepath")
 
   assert_file_uploaded_equal $(get_file_url "$response") $filepath
 }
 
-function test_resizes_image_gif_files {
-  resized_filepath=${BASH_SOURCE%/*}/fixtures/test_2x2.gif
-  filepath=${BASH_SOURCE%/*}/fixtures/test_4x4.gif
+test_resizes_image_gif_files() {
+  resized_filepath=$FIXTURES_PATH/test_2x2.gif
+  filepath=$FIXTURES_PATH/test_4x4.gif
 
   response=$(request POST image/gif --data-binary @"$filepath")
 
   assert_file_uploaded_equal "$(get_file_url "$response")?w=2" $resized_filepath
 }
 
-function test_resizes_using_width_parameter {
-  resized_filepath=${BASH_SOURCE%/*}/fixtures/test_2x2.png
-  filepath=${BASH_SOURCE%/*}/fixtures/test_4x4.png
+test_resizes_using_width_parameter() {
+  resized_filepath=$FIXTURES_PATH/test_2x2.png
+  filepath=$FIXTURES_PATH/test_4x4.png
 
   response=$(request POST image/png --data-binary @"$filepath")
 
   assert_file_uploaded_equal "$(get_file_url "$response")?w=2" $resized_filepath
 }
 
-function test_resizes_using_height_parameter {
-  resized_filepath=${BASH_SOURCE%/*}/fixtures/test_2x2.png
-  filepath=${BASH_SOURCE%/*}/fixtures/test_4x4.png
+test_resizes_using_height_parameter() {
+  resized_filepath=$FIXTURES_PATH/test_2x2.png
+  filepath=$FIXTURES_PATH/test_4x4.png
 
   response=$(request POST image/png --data-binary @"$filepath")
 
   assert_file_uploaded_equal "$(get_file_url "$response")?h=2" $resized_filepath
 }
 
-function test_resizes_using_the_minimum_size {
-  resized_filepath=${BASH_SOURCE%/*}/fixtures/test_2x2.png
-  filepath=${BASH_SOURCE%/*}/fixtures/test_4x4.png
+test_resizes_using_the_minimum_size() {
+  resized_filepath=$FIXTURES_PATH/test_2x2.png
+  filepath=$FIXTURES_PATH/test_4x4.png
 
   response=$(request POST image/png --data-binary @"$filepath")
 
   assert_file_uploaded_equal "$(get_file_url "$response")?w=3&h=2" $resized_filepath
 }
 
-function test_resizing_does_not_stretch_the_image {
-  filepath=${BASH_SOURCE%/*}/fixtures/test_4x4.png
+test_resizing_does_not_stretch_the_image() {
+  filepath=$FIXTURES_PATH/test_4x4.png
 
   response=$(request POST image/png --data-binary @"$filepath")
 
   assert_file_uploaded_equal "$(get_file_url "$response")?w=20" $filepath
 }
 
-function test_uploads_text_plain_files {
-  filepath=${BASH_SOURCE%/*}/fixtures/test.txt
+test_uploads_text_plain_files() {
+  filepath=$FIXTURES_PATH/test.txt
 
   response=$(request POST text/plain --data-binary @"$filepath")
 
   assert_file_uploaded_equal $(get_file_url "$response") $filepath
 }
 
-function test_ignores_resizing_parameters_with_text_plain_files {
-  filepath=${BASH_SOURCE%/*}/fixtures/test.txt
+test_ignores_resizing_parameters_with_text_plain_files() {
+  filepath=$FIXTURES_PATH/test.txt
 
   response=$(request POST text/plain --data-binary @"$filepath")
 
   assert_file_uploaded_equal "$(get_file_url "$response")?w=20" $filepath
 }
 
-function request {
+request() {
   method=$1; shift
   content_type=$1; shift
   curl --verbose --request $method --header "Content-Type: $content_type" $@ $FILES_HOST 2>&1
 }
 
-function get_file_url {
+get_file_url() {
   echo "$1" | grep "X-File-URL" | cut -d " " -f 3 | tr -d "\r"
 }
 
-function assert_file_uploaded_equal {
+assert_file_uploaded_equal() {
   file_url=$1
   file_url_with_params=${file_url%\?*}
   filename=${file_url_with_params##*/}
@@ -170,23 +170,21 @@ function assert_file_uploaded_equal {
   cmp /tmp/$filename $2
 }
 
-function assert_contains {
+assert_contains() {
   echo "$1" | grep "$2"
 }
 
-function run_tests {
+run_tests() {
   SECONDS=0
   failures_count=0
   test_count=0
-  tests=$(grep -E "function test_" $0 | grep -v grep | cut -d " " -f 2)
-
-  setup > /dev/null 2>&1
+  tests=$(grep -E "^test_.*\(\)" $0 | grep -v grep | cut -d "(" -f 1)
 
   for test in $tests; do
     test_count=$((test_count+1))
     test_output=$(eval $test)
 
-    if [[ $? -eq 0 ]]; then
+    if [ $? -eq 0 ]; then
       printf "${GREEN}.${RESET}"
     else
       failures_count=$((failures_count+1))
