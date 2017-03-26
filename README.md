@@ -20,7 +20,11 @@ If you are familiar with Docker, build the Docker image (`docker build -t <usern
 * `FILES_AWS_SECRET_ACCESS_KEY`: AWS secret key.
 * `FILES_AWS_REGION`: AWS region.
 * `FILES_AWS_S3_BUCKET`: AWS S3 bucket where the files will be stored.
-* `FILES_HOST`: the host of the service. It **must not** contain the protocol (HTTP/HTTPS)
+* `FILES_URL_*`: configuration for generating URLs throughout the service:
+
+  * `FILES_URL_SCHEME`: scheme, `http` or `https`. Defaults to the scheme of the request.
+  * `FILES_URL_HOST`: host. Defaults to the host name from the request line, or host name from the `Host` request header field, or the server name matching a request.
+  * `FILES_URL_PORT`: port. Defaults to 80.
 
 ## Usage
 
@@ -29,7 +33,7 @@ If you are familiar with Docker, build the Docker image (`docker build -t <usern
 To upload a file to S3, you must send a `POST` request with the content of the file and the `Content-Type` header to `/`:
 
 ```bash
-$ curl --verbose --header "Content-Type: <mime type>" --data-binary @"<path to file" $FILES_HOST
+$ curl --verbose --header "Content-Type: <mime type>" --data-binary @"<path to file" $FILES_URL
 ```
 
 Here is an example:
@@ -88,7 +92,7 @@ Before running the script, be sure to launch the service and provide the proper 
 `script/test` can be used also for testing staging or production environments:
 
 ```bash
-FILES_HOST=files.company.com script/test
+FILES_URL=http://files.company.com script/test
 ```
 
 ## Contributing

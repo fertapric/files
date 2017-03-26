@@ -6,12 +6,12 @@ RESET="\33[0m"
 
 FIXTURES_PATH=$(dirname -- "$0")/fixtures
 
-if [ -z "$FILES_HOST" ]; then
-  FILES_HOST=localhost
+if [ -z "$FILES_URL" ]; then
+  FILES_URL=localhost
 fi
 
 test_healthcheck_endpoint() {
-  response=$(curl --verbose $FILES_HOST/check 2>&1)
+  response=$(curl --verbose $FILES_URL/check 2>&1)
 
   assert_contains "$response" "< HTTP/1.1 200 OK" && \
   assert_contains "$response" "Content-Type: application/json" && \
@@ -153,7 +153,7 @@ test_ignores_resizing_parameters_with_text_plain_files() {
 request() {
   method=$1; shift
   content_type=$1; shift
-  curl --verbose --request $method --header "Content-Type: $content_type" $@ $FILES_HOST 2>&1
+  curl --verbose --request $method --header "Content-Type: $content_type" $@ $FILES_URL 2>&1
 }
 
 get_file_url() {
