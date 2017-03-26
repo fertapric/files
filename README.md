@@ -26,6 +26,8 @@ If you are familiar with Docker, build the Docker image (`docker build -t <usern
   * `FILES_URL_HOST`: host. Defaults to the host name from the request line, or host name from the `Host` request header field, or the server name matching a request.
   * `FILES_URL_PORT`: port. Defaults to 80.
 
+_**Note:** nginx `listen` directives cannot be configured using environment variables. This means that **Files** will listen on port 80 by default. If you want the service to listen on a different port, you must edit the line `listen 80` on `nginx/nginx.conf` with the desired one._
+
 ## Usage
 
 ### Uploading files
