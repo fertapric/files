@@ -1,6 +1,6 @@
 # Files
 
-A service to upload files to AWS S3, in less than 180 LOC of nginx configuration!
+A service to upload files to AWS S3, in less than 200 LOC of nginx configuration!
 
 The service also dynamically resizes images in JPEG, GIF and PNG formats.
 
