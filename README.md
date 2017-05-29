@@ -97,6 +97,12 @@ Before running the script, be sure to launch the service and provide the proper 
 FILES_URL=http://files.company.com script/test
 ```
 
+In addition, nginx configuration can be analyzed using [Gixy](https://github.com/yandex/gixy):
+
+```shell
+$ script/lint
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/fertapric/files. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.

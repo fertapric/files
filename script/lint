@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -e
+
+RED="\33[31;1m"
+RESET="\33[0m"
+
+if which gixy &> /dev/null; then
+  gixy $(dirname -- "$0")/../nginx/nginx.conf
+else
+  printf $RED
+  echo "Gixy not found. Please, install it by running:"
+  echo
+  echo "    $ pip install gixy"
+  echo
+  printf $RESET
+fi
