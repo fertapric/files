@@ -1,6 +1,6 @@
 # Files
 
-A service to upload files to AWS S3, in less than 200 LOC of nginx configuration!
+A service to upload files to AWS S3, in around 200 LOC of nginx configuration!
 
 The service also dynamically resizes images in JPEG, GIF and PNG formats.
 
@@ -35,13 +35,13 @@ _**Note:** nginx `listen` directives cannot be configured using environment vari
 To upload a file to S3, you must send a `POST` request with the content of the file and the `Content-Type` header to `/`:
 
 ```bash
-$ curl --verbose --header "Content-Type: <mime type>" --data-binary @"<path to file" $FILES_URL
+$ curl --verbose -X POST --header "Content-Type: <mime type>" --data-binary @"<path to file" $FILES_URL
 ```
 
 Here is an example:
 
 ```bash
-$ curl --verbose --header "Content-Type: text/plain" --data-binary @"/home/fertapric/document.txt" files.company.com
+$ curl --verbose -X POST --header "Content-Type: text/plain" --data-binary @"/home/fertapric/document.txt" files.company.com
 > POST / HTTP/1.1
 > Host: files.company.com
 > User-Agent: curl/7.51.0
