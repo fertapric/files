@@ -10,7 +10,7 @@ The service also dynamically resizes images in JPEG, GIF and PNG formats.
 
 If you are not familiar with Docker, copy the configuration file where the `nginx.conf` is placed on the target machine (by default at `/usr/local/nginx/conf`, `/etc/nginx`, or `/usr/local/etc/nginx`). Once the configuration file is there, set the environment variables of the project and start/restart the nginx service to apply the new configuration.
 
-If you are familiar with Docker, build the Docker image (`docker build -t <username>/files .`) using the `Dockerfile` at the root of the project. Once the Docker image is build, you can launch a new container by executing `docker run -P 80:80 -e <env vars list> <username>/files`
+If you are familiar with Docker, an official image can be found at [https://hub.docker.com/r/fertapric/files/](https://hub.docker.com/r/fertapric/files/).
 
 #### Environment Variables
 
