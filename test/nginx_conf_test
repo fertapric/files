@@ -11,7 +11,7 @@ if [ -z "$FILES_URL" ]; then
 fi
 
 test_healthcheck_endpoint() {
-  response=$(curl --verbose $FILES_URL/check 2>&1)
+  response=$(curl -v $FILES_URL/check 2>&1)
 
   assert_contains "$response" "< HTTP/1.1 200 OK" && \
   assert_contains "$response" "Content-Type: application/json" && \
@@ -19,155 +19,205 @@ test_healthcheck_endpoint() {
 }
 
 test_upload_endpoint_rejects_get_requests() {
-  response=$(request GET)
+  response=$(curl -v -X GET $FILES_URL 2>&1)
 
   assert_contains "$response" "< HTTP/1.1 404 Not Found"
 }
 
 test_upload_endpoint_rejects_put_requests() {
-  response=$(request PUT)
+  response=$(curl -v -X PUT $FILES_URL 2>&1)
 
   assert_contains "$response" "< HTTP/1.1 404 Not Found"
 }
 
 test_upload_endpoint_rejects_delete_requests() {
-  response=$(request DELETE)
+  response=$(curl -v -X DELETE $FILES_URL 2>&1)
 
   assert_contains "$response" "< HTTP/1.1 404 Not Found"
 }
 
 test_upload_endpoint_rejects_requests_without_content_type() {
-  response=$(request POST "")
+  response=$(curl -v -X POST $FILES_URL 2>&1)
+
+  assert_contains "$response" "< HTTP/1.1 415 Unsupported Media Type"
+}
+
+test_upload_endpoint_rejects_requests_with_empty_content_type() {
+  response=$(curl -v -X POST -H "Content-Type:" $FILES_URL 2>&1)
 
   assert_contains "$response" "< HTTP/1.1 415 Unsupported Media Type"
 }
 
 test_upload_endpoint_rejects_requests_with_unsupported_content_type() {
-  response=$(request POST application/json)
+  response=$(curl -v -X POST -H "Content-Type: application/json" $FILES_URL 2>&1)
 
   assert_contains "$response" "< HTTP/1.1 415 Unsupported Media Type"
 }
 
 test_uploads_image_png_files() {
-  filepath=$FIXTURES_PATH/test_4x4.png
+  file=$FIXTURES_PATH/test_4x4.png
 
-  response=$(request POST image/png --data-binary @"$filepath")
+  response=$(curl -v -X POST -H "Content-Type: image/png" --data-binary @"$file" $FILES_URL 2>&1)
+  file_url=$(get_file_url "$response")
 
-  assert_file_uploaded_equal $(get_file_url "$response") $filepath
+  assert_file_equal $(download_file_from_url $file_url) $file
 }
 
 test_resizes_image_png_files() {
-  resized_filepath=$FIXTURES_PATH/test_2x2.png
-  filepath=$FIXTURES_PATH/test_4x4.png
+  resized_file=$FIXTURES_PATH/test_2x2.png
+  file=$FIXTURES_PATH/test_4x4.png
 
-  response=$(request POST image/png --data-binary @"$filepath")
+  response=$(curl -v -X POST -H "Content-Type: image/png" --data-binary @"$file" $FILES_URL 2>&1)
+  file_url=$(get_file_url "$response")
+  resized_file_url="${file_url}?w=2"
 
-  assert_file_uploaded_equal "$(get_file_url "$response")?w=2" $resized_filepath
+  assert_file_equal $(download_file_from_url $resized_file_url) $resized_file
 }
 
 test_uploads_image_jpeg_files() {
-  filepath=$FIXTURES_PATH/test_4x4.jpeg
+  file=$FIXTURES_PATH/test_4x4.jpeg
 
-  response=$(request POST image/jpeg --data-binary @"$filepath")
+  response=$(curl -v -X POST -H "Content-Type: image/jpeg" --data-binary @"$file" $FILES_URL 2>&1)
+  file_url=$(get_file_url "$response")
 
-  assert_file_uploaded_equal $(get_file_url "$response") $filepath
+  assert_file_equal $(download_file_from_url $file_url) $file
 }
 
 test_resizes_image_jpeg_files() {
-  resized_filepath=$FIXTURES_PATH/test_2x2.jpeg
-  filepath=$FIXTURES_PATH/test_4x4.jpeg
+  resized_file=$FIXTURES_PATH/test_2x2.jpeg
+  file=$FIXTURES_PATH/test_4x4.jpeg
 
-  response=$(request POST image/jpeg --data-binary @"$filepath")
+  response=$(curl -v -X POST -H "Content-Type: image/jpeg" --data-binary @"$file" $FILES_URL 2>&1)
+  file_url=$(get_file_url "$response")
+  resized_file_url="${file_url}?w=2"
 
-  assert_file_uploaded_equal "$(get_file_url "$response")?w=2" $resized_filepath
+  assert_file_equal $(download_file_from_url $resized_file_url) $resized_file
 }
 
 test_uploads_image_gif_files() {
-  filepath=$FIXTURES_PATH/test_4x4.gif
+  file=$FIXTURES_PATH/test_4x4.gif
 
-  response=$(request POST image/gif --data-binary @"$filepath")
+  response=$(curl -v -X POST -H "Content-Type: image/gif" --data-binary @"$file" $FILES_URL 2>&1)
+  file_url=$(get_file_url "$response")
 
-  assert_file_uploaded_equal $(get_file_url "$response") $filepath
+  assert_file_equal $(download_file_from_url $file_url) $file
 }
 
 test_resizes_image_gif_files() {
-  resized_filepath=$FIXTURES_PATH/test_2x2.gif
-  filepath=$FIXTURES_PATH/test_4x4.gif
+  resized_file=$FIXTURES_PATH/test_2x2.gif
+  file=$FIXTURES_PATH/test_4x4.gif
 
-  response=$(request POST image/gif --data-binary @"$filepath")
+  response=$(curl -v -X POST -H "Content-Type: image/gif" --data-binary @"$file" $FILES_URL 2>&1)
+  file_url=$(get_file_url "$response")
+  resized_file_url="${file_url}?w=2"
 
-  assert_file_uploaded_equal "$(get_file_url "$response")?w=2" $resized_filepath
+  assert_file_equal $(download_file_from_url $resized_file_url) $resized_file
 }
 
 test_resizes_using_width_parameter() {
-  resized_filepath=$FIXTURES_PATH/test_2x2.png
-  filepath=$FIXTURES_PATH/test_4x4.png
+  resized_file=$FIXTURES_PATH/test_2x2.png
+  file=$FIXTURES_PATH/test_4x4.png
 
-  response=$(request POST image/png --data-binary @"$filepath")
+  response=$(curl -v -X POST -H "Content-Type: image/png" --data-binary @"$file" $FILES_URL 2>&1)
+  file_url=$(get_file_url "$response")
+  resized_file_url="${file_url}?w=2"
 
-  assert_file_uploaded_equal "$(get_file_url "$response")?w=2" $resized_filepath
+  assert_file_equal $(download_file_from_url $resized_file_url) $resized_file
 }
 
 test_resizes_using_height_parameter() {
-  resized_filepath=$FIXTURES_PATH/test_2x2.png
-  filepath=$FIXTURES_PATH/test_4x4.png
+  resized_file=$FIXTURES_PATH/test_2x2.png
+  file=$FIXTURES_PATH/test_4x4.png
 
-  response=$(request POST image/png --data-binary @"$filepath")
+  response=$(curl -v -X POST -H "Content-Type: image/png" --data-binary @"$file" $FILES_URL 2>&1)
+  file_url=$(get_file_url "$response")
+  resized_file_url="${file_url}?h=2"
 
-  assert_file_uploaded_equal "$(get_file_url "$response")?h=2" $resized_filepath
+  assert_file_equal $(download_file_from_url $resized_file_url) $resized_file
 }
 
 test_resizes_using_the_minimum_size() {
-  resized_filepath=$FIXTURES_PATH/test_2x2.png
-  filepath=$FIXTURES_PATH/test_4x4.png
+  resized_file=$FIXTURES_PATH/test_2x2.png
+  file=$FIXTURES_PATH/test_4x4.png
 
-  response=$(request POST image/png --data-binary @"$filepath")
+  response=$(curl -v -X POST -H "Content-Type: image/png" --data-binary @"$file" $FILES_URL 2>&1)
+  file_url=$(get_file_url "$response")
+  resized_file_url="${file_url}?w=3&h=2"
 
-  assert_file_uploaded_equal "$(get_file_url "$response")?w=3&h=2" $resized_filepath
+  assert_file_equal $(download_file_from_url $resized_file_url) $resized_file
 }
 
 test_resizing_does_not_stretch_the_image() {
-  filepath=$FIXTURES_PATH/test_4x4.png
+  file=$FIXTURES_PATH/test_4x4.png
 
-  response=$(request POST image/png --data-binary @"$filepath")
+  response=$(curl -v -X POST -H "Content-Type: image/png" --data-binary @"$file" $FILES_URL 2>&1)
+  file_url=$(get_file_url "$response")
+  resized_file_url="${file_url}?w=20"
 
-  assert_file_uploaded_equal "$(get_file_url "$response")?w=20" $filepath
+  assert_file_equal $(download_file_from_url $file_url) $file
 }
 
 test_uploads_text_plain_files() {
-  filepath=$FIXTURES_PATH/test.txt
+  file=$FIXTURES_PATH/test.txt
 
-  response=$(request POST text/plain --data-binary @"$filepath")
+  response=$(curl -v -X POST -H "Content-Type: text/plain" --data-binary @"$file" $FILES_URL 2>&1)
+  file_url=$(get_file_url "$response")
 
-  assert_file_uploaded_equal $(get_file_url "$response") $filepath
+  assert_file_equal $(download_file_from_url $file_url) $file
 }
 
 test_ignores_resizing_parameters_with_text_plain_files() {
-  filepath=$FIXTURES_PATH/test.txt
+  file=$FIXTURES_PATH/test.txt
 
-  response=$(request POST text/plain --data-binary @"$filepath")
+  response=$(curl -v -X POST -H "Content-Type: text/plain" --data-binary @"$file" $FILES_URL 2>&1)
+  file_url=$(get_file_url "$response")
+  resized_file_url="${file_url}?w=20"
 
-  assert_file_uploaded_equal "$(get_file_url "$response")?w=20" $filepath
+  assert_file_equal $(download_file_from_url $resized_file_url) $file
 }
 
-request() {
-  method=$1; shift
-  content_type=$1; shift
-  curl --verbose --request $method --header "Content-Type: $content_type" $@ $FILES_URL 2>&1
-}
-
+# Parses the URL from the cURL response
+#
+# Example:
+#
+#    $ echo "$1"
+#    > POST / HTTP/1.1
+#    > Host: files.company.com
+#    > User-Agent: curl/7.51.0
+#    > Accept: */*
+#    > Content-Type: text/plain
+#    > Content-Length: 15
+#    >
+#    < HTTP/1.1 200 OK
+#    < Server: nginx/1.11.8
+#    < Date: Wed, 25 Jan 2017 21:30:00 GMT
+#    < Content-Length: 0
+#    < Connection: keep-alive
+#    < X-File-URL: http://files.company.com/text/plain/6CEB99DE-E345-11E6-BBA6-C680ACE78BD7
+#    < ETag: "ff22941336956098ae9a564289d1bf1b"
+#    < Cache-Control: no-cache
+#
+#    $ grep "X-File-URL"
+#    < X-File-URL: http://files.company.com/text/plain/6CEB99DE-E345-11E6-BBA6-C680ACE78BD7
+#
+#    $ cut -d " " -f 3
+#    http://files.company.com/text/plain/6CEB99DE-E345-11E6-BBA6-C680ACE78BD7
+#
 get_file_url() {
-  echo "$1" | grep "X-File-URL" | cut -d " " -f 3 | tr -d "\r"
+  echo "$1" \
+  | grep "X-File-URL" \
+  | cut -d " " -f 3 \
+  | tr -d "\r"
 }
 
-assert_file_uploaded_equal() {
-  file_url=$1
-  file_url_with_params=${file_url%\?*}
-  filename=${file_url_with_params##*/}
+download_file_from_url() {
+  tmp_file=$(mktemp /tmp/files.XXXXXX)
+  curl -s $1 > $tmp_file
+  echo $tmp_file
+}
 
-  curl -o /tmp/$filename $file_url 2>&1
-
-  cmp /tmp/$filename $2
+assert_file_equal() {
+  cmp $1 $2
 }
 
 assert_contains() {
@@ -188,7 +238,17 @@ run_tests() {
       printf "${GREEN}.${RESET}"
     else
       failures_count=$((failures_count+1))
-      printf "\n${RED}E\n\nTest $test failed\n\nOutput:\n\n${test_output}${RESET}\n"
+
+      printf $RED
+      echo
+      echo
+      echo "Test $test failed"
+      echo
+      echo "Output:"
+      echo
+      echo $test_output
+      echo
+      printf $RESET
     fi
   done
 
