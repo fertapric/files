@@ -8,11 +8,7 @@ The service also dynamically resizes images in JPEG, GIF and PNG formats.
 
 **Files** logic is contained within the nginx configuration at `nginx/nginx.conf`.
 
-If you are not familiar with Docker, copy the configuration file where the `nginx.conf` is placed on the target machine (by default at `/usr/local/nginx/conf`, `/etc/nginx`, or `/usr/local/etc/nginx`). Once the configuration file is there, set the environment variables of the project and start/restart the nginx service to apply the new configuration.
-
-If you are familiar with Docker, an official image can be found at [https://hub.docker.com/r/fertapric/files/](https://hub.docker.com/r/fertapric/files/).
-
-#### Environment Variables
+To setup the service, just copy the nginx configuration file where the `nginx.conf` is placed on the target machine (by default at `/usr/local/nginx/conf`, `/etc/nginx`, or `/usr/local/etc/nginx`). Once the configuration file is there, set the environment variables of the project and start/restart the nginx service to apply the new configuration.
 
 **Files** must be configured with the following environment variables:
 
@@ -20,11 +16,9 @@ If you are familiar with Docker, an official image can be found at [https://hub.
 * `FILES_AWS_SECRET_ACCESS_KEY`: AWS secret key.
 * `FILES_AWS_REGION`: AWS region.
 * `FILES_AWS_S3_BUCKET`: AWS S3 bucket where the files will be stored.
-* `FILES_URL_*`: configuration for generating URLs throughout the service:
-
-  * `FILES_URL_SCHEME`: scheme, `http` or `https`. Defaults to the scheme of the request.
-  * `FILES_URL_HOST`: host. Defaults to the host name from the request line, or host name from the `Host` request header field, or the server name matching a request.
-  * `FILES_URL_PORT`: port. Defaults to 80.
+* `FILES_URL_SCHEME`: scheme for generating URLs throughout the service, `http` or `https`. Defaults to the scheme of the request.
+* `FILES_URL_HOST`: host for generating URLs throughout the service. Defaults to the host name from the request line, or host name from the `Host` request header field, or the server name matching a request.
+* `FILES_URL_PORT`: port for generating URLs throughout the service. Defaults to 80.
 
 _**Note:** nginx `listen` directives cannot be configured using environment variables. This means that **Files** will listen on port 80 by default. If you want the service to listen on a different port, you must edit the line `listen 80` on `nginx/nginx.conf` with the desired one._
 
@@ -102,6 +96,10 @@ In addition, nginx configuration can be analyzed using [Gixy](https://github.com
 ```shell
 $ script/lint
 ```
+
+## Docker
+
+If you are familiar with Docker, an official image can be found at [https://hub.docker.com/r/fertapric/files/](https://hub.docker.com/r/fertapric/files/).
 
 ## Contributing
 
