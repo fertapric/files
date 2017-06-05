@@ -12,13 +12,13 @@ To setup the service, just copy the nginx configuration file where the `nginx.co
 
 **Files** must be configured with the following environment variables:
 
-* `FILES_AWS_ACCESS_KEY_ID`: AWS access Key ID.
-* `FILES_AWS_SECRET_ACCESS_KEY`: AWS secret key.
-* `FILES_AWS_REGION`: AWS region.
-* `FILES_AWS_S3_BUCKET`: AWS S3 bucket where the files will be stored.
-* `FILES_URL_SCHEME`: scheme for generating URLs throughout the service, `http` or `https`. Defaults to the scheme of the request.
-* `FILES_URL_HOST`: host for generating URLs throughout the service. Defaults to the host name from the request line, or host name from the `Host` request header field, or the server name matching a request.
-* `FILES_URL_PORT`: port for generating URLs throughout the service. Defaults to 80.
+* **FILES_AWS_ACCESS_KEY_ID:** AWS access Key ID.
+* **FILES_AWS_SECRET_ACCESS_KEY:** AWS secret key.
+* **FILES_AWS_REGION:** AWS region.
+* **FILES_AWS_S3_BUCKET:** AWS S3 bucket where the files will be stored.
+* **FILES_URL_SCHEME:** scheme for generating URLs throughout the service, `http` or `https`. Defaults to the scheme of the request.
+* **FILES_URL_HOST:** host for generating URLs throughout the service. Defaults to the host name from the request line, or host name from the `Host` request header field, or the server name matching a request.
+* **FILES_URL_PORT:** port for generating URLs throughout the service. Defaults to 80.
 
 _**Note:** nginx `listen` directives cannot be configured using environment variables. This means that **Files** will listen on port 80 by default. If you want the service to listen on a different port, you must edit the line `listen 80` on `nginx/nginx.conf` with the desired one._
 
