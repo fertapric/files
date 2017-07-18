@@ -1,14 +1,14 @@
 # Files
 
-A service to upload files to AWS S3, in around 200 LOC of nginx configuration!
+A service to upload files to AWS S3, in around 200 LOC of NGINX configuration!
 
 The service also dynamically resizes images in JPEG, GIF and PNG formats.
 
 ## Getting Started
 
-**Files** logic is contained within the nginx configuration at `nginx/nginx.conf`.
+**Files** logic is contained within the NGINX configuration at `nginx/nginx.conf`.
 
-To setup the service, just copy the nginx configuration file where the `nginx.conf` is placed on the target machine (by default at `/usr/local/nginx/conf`, `/etc/nginx`, or `/usr/local/etc/nginx`). Once the configuration file is there, set the environment variables of the project and start/restart the nginx service to apply the new configuration.
+To setup the service, just copy the NGINX configuration file where the `nginx.conf` is placed on the target machine (by default at `/usr/local/nginx/conf`, `/etc/nginx`, or `/usr/local/etc/nginx`). Once the configuration file is there, set the environment variables of the project and start/restart the NGINX service to apply the new configuration.
 
 **Files** must be configured with the following environment variables:
 
@@ -20,7 +20,7 @@ To setup the service, just copy the nginx configuration file where the `nginx.co
 * **FILES_URL_HOST:** host for generating URLs throughout the service. Defaults to the host name from the request line, or host name from the `Host` request header field, or the server name matching a request.
 * **FILES_URL_PORT:** port for generating URLs throughout the service. Defaults to 80.
 
-_**Note:** nginx `listen` directives cannot be configured using environment variables. This means that **Files** will listen on port 80 by default. If you want the service to listen on a different port, you must edit the line `listen 80` on `nginx/nginx.conf` with the desired one._
+_**Note:** NGINX `listen` directives cannot be configured using environment variables. This means that **Files** will listen on port 80 by default. If you want the service to listen on a different port, you must edit the line `listen 80` on `nginx/nginx.conf` with the desired one._
 
 ## Usage
 
@@ -54,7 +54,7 @@ $ curl --verbose -X POST --header "Content-Type: text/plain" --data-binary @"/ho
 <
 ```
 
-Internally, nginx will include an [AWS Signature Version 4](http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html) authorization header, proxy your request to AWS S3, and include the header `X-File-URL` with the URL of your uploaded file in its response.
+Internally, NGINX will include an [AWS Signature Version 4](http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html) authorization header, proxy your request to AWS S3, and include the header `X-File-URL` with the URL of your uploaded file in its response.
 
 The [S3 key](http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html) is generated using a combination of the content type and a unique identifier (i.e. `image/png/6CEB99DE-E345-11E6-BBA6-C680ACE78BD7`).
 
@@ -91,7 +91,7 @@ Before running the script, be sure to launch the service and provide the proper 
 FILES_URL=http://files.company.com script/test
 ```
 
-In addition, nginx configuration can be analyzed using [Gixy](https://github.com/yandex/gixy):
+In addition, NGINX configuration can be analyzed using [Gixy](https://github.com/yandex/gixy):
 
 ```shell
 $ script/lint
