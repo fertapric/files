@@ -1,5 +1,7 @@
 # Files
 
+[![Build Status](https://travis-ci.org/fertapric/files.svg?branch=master)](https://travis-ci.org/fertapric/files)
+
 A service to upload files to AWS S3, in around 200 LOC of NGINX configuration!
 
 The service also dynamically resizes images in JPEG, GIF and PNG formats.
