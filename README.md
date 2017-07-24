@@ -101,6 +101,8 @@ $ script/lint
 
 If you are familiar with Docker, an official image can be found at [https://hub.docker.com/r/fertapric/files/](https://hub.docker.com/r/fertapric/files/).
 
+The Docker image provides an additional environment variable `FILES_PORT` to configure the port in which the service will accept requests. Defaults to port 80.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/fertapric/files. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
