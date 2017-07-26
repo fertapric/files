@@ -14,4 +14,5 @@ else
   echo "    $ pip install gixy"
   echo
   printf $RESET_COLOR
+  exit 1
 fi
