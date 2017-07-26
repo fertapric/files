@@ -2,10 +2,10 @@
 
 set -e
 
-RED="\33[31;1m"
+RED="\33[31m"
 RESET_COLOR="\33[0m"
 
-if which gixy &> /dev/null; then
+if command -v gixy &> /dev/null; then
   gixy $(dirname -- "$0")/../nginx/nginx.conf
 else
   printf $RED

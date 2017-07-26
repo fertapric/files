@@ -1,8 +1,11 @@
+language: python
 sudo: required
 services:
   - docker
+install: pip install gixy
 script:
   - script/ci
+  - script/lint
 notifications:
   email:
     - fertapric@gmail.com
