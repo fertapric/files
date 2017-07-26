@@ -1,0 +1,74 @@
+#!/bin/sh
+
+set -e
+
+RED="\33[31m"
+RESET_COLOR="\33[0m"
+
+error() {
+  printf "${RED}$1\n${RESET_COLOR}"
+  exit 1
+}
+
+command -v docker &> /dev/null || error "Docker not found. Please, install it and try again."
+
+cd $(dirname -- "$0")/..
+
+NETWORK=files-ci
+AWS_REGION=us-east-1
+AWS_S3_BUCKET=files-test
+
+# The CI server should run the test suite in isolation, without making any real requests
+# over the Internet. However, Files is configured to use Google's nameserver (8.8.8.8) as
+# DNS resolver.
+#
+# This Docker network allows to reassign the IP address 8.8.8.8 to a local Dnsmasq, turning
+# external requests into local ones.
+docker network create --subnet 8.8.8.0/24 $NETWORK
+
+docker build -t fertapric/files:test .
+docker run --expose 9999 \
+           --network $NETWORK \
+           -d \
+           -e FILES_AWS_ACCESS_KEY_ID=key \
+           -e FILES_AWS_SECRET_ACCESS_KEY=secret \
+           -e FILES_AWS_REGION=$AWS_REGION \
+           -e FILES_AWS_S3_BUCKET=$AWS_S3_BUCKET \
+           -e FILES_PORT=9999 \
+           -e FILES_URL_HOST=localhost \
+           -e FILES_URL_PORT=80 \
+           -p 80:9999 \
+           fertapric/files:test
+
+# Dnsmasq replaces Google's nameserver at 8.8.8.8 and resolves to 8.8.8.5
+# (LocalStack) all the DNS queries related to AWS.
+docker run --expose 53 \
+           --cap-add NET_ADMIN \
+           --ip 8.8.8.8 \
+           --network $NETWORK \
+           --rm \
+           -d \
+           alpine:3.6 \
+           /bin/sh -c "apk update; apk add dnsmasq; dnsmasq -dq --address=/amazonaws.com/8.8.8.5"
+
+# LocalStack mocks AWS S3.
+docker run --expose 443 \
+           --ip 8.8.8.5 \
+           --network $NETWORK \
+           --rm \
+           --name localstack \
+           -d \
+           -e SERVICES=s3:443 \
+           -e DEFAULT_REGION=$AWS_REGION \
+           -e USE_SSL=true \
+           localstack/localstack
+# Ensure LocalStack is up
+docker exec localstack timeout -t 60 bash -c "until curl -kfs https://localhost; do sleep 1; done"
+# Create the S3 Bucket in LocalStack
+docker exec localstack curl -k \
+                            -H "Host:${AWS_S3_BUCKET}.s3.amazonaws.com" \
+                            -H "Content-Length:0" \
+                            -X PUT \
+                            https://localhost
+
+script/test
