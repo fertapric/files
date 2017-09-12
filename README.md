@@ -109,10 +109,8 @@ The Docker image provides an additional environment variable `FILES_PORT` to con
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/fertapric/files. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
-## License
+## Copyright and License
 
-**Files** is released under the [MIT License](http://www.opensource.org/licenses/MIT).
+Copyright 2017 Fernando Tapia Rico
 
-## Author
-
-Fernando Tapia Rico, [@fertapric](https://twitter.com/fertapric)
+Files source code is licensed under the [MIT License](LICENSE).
