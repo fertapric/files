@@ -1,4 +1,4 @@
-FROM nginx:1.13.5-alpine-perl
+FROM nginx:1.13.6-alpine-perl
 
 RUN apk add --no-cache perl-data-uuid=1.221-r0
 
