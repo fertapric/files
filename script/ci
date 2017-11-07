@@ -29,6 +29,7 @@ docker network create --subnet 8.8.8.0/24 $NETWORK
 docker build -t fertapric/files:test .
 docker run --expose 9999 \
            --network $NETWORK \
+           --rm \
            -d \
            -e FILES_AWS_ACCESS_KEY_ID=key \
            -e FILES_AWS_SECRET_ACCESS_KEY=secret \
@@ -65,7 +66,7 @@ docker run --expose 443 \
 # Ensure LocalStack is up
 docker exec localstack timeout -t 60 bash -c "until curl -kfs https://localhost; do sleep 1; done"
 # Create the S3 Bucket in LocalStack
-docker exec localstack curl -k \
+docker exec localstack curl -kfs \
                             -H "Host:${AWS_S3_BUCKET}.s3.amazonaws.com" \
                             -H "Content-Length:0" \
                             -X PUT \
