@@ -6,7 +6,7 @@ RED="\33[31m"
 RESET_COLOR="\33[0m"
 
 if command -v gixy &> /dev/null; then
-  gixy $(dirname -- "$0")/../nginx/nginx.conf
+  gixy --disable-includes $(dirname -- "$0")/../nginx/nginx.conf
 else
   printf $RED
   echo "Gixy not found. Please, install it by running:"
