@@ -24,6 +24,12 @@ To setup the service, just copy the NGINX configuration file where the `nginx.co
 
 _**Note:** NGINX `listen` directives cannot be configured using environment variables. This means that **Files** will listen on port 80 by default. If you want the service to listen on a different port, you must edit the line `listen 80` on `nginx/nginx.conf` with the desired one._
 
+### Docker
+
+If you are familiar with Docker, an official image can be found at [https://hub.docker.com/r/fertapric/files/](https://hub.docker.com/r/fertapric/files/).
+
+The Docker image provides an additional environment variable **FILES_PORT** to configure the port in which the service will accept requests. Defaults to port 80.
+
 ## Usage
 
 ### Uploading files
@@ -98,12 +104,6 @@ In addition, NGINX configuration can be analyzed using [GIXY](https://github.com
 ```shell
 $ script/lint
 ```
-
-## Docker
-
-If you are familiar with Docker, an official image can be found at [https://hub.docker.com/r/fertapric/files/](https://hub.docker.com/r/fertapric/files/).
-
-The Docker image provides an additional environment variable `FILES_PORT` to configure the port in which the service will accept requests. Defaults to port 80.
 
 ## Contributing
 
