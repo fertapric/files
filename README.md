@@ -93,7 +93,7 @@ Before running the script, be sure to launch the service and provide the proper 
 FILES_URL=http://files.company.com script/test
 ```
 
-In addition, NGINX configuration can be analyzed using [Gixy](https://github.com/yandex/gixy):
+In addition, NGINX configuration can be analyzed using [GIXY](https://github.com/yandex/gixy):
 
 ```shell
 $ script/lint
