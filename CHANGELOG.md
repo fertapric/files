@@ -1,6 +1,9 @@
 # Changelog
 
-## Master
+## v1.3.0 (2017-12-06)
+
+* Upgrade the NGINX Docker image to `nginx:1.13.7-alpine-perl`.
+* Add a `version` field in `/check` response.
 
 ## v1.2.2 (2017-11-07)
 
